@@ -1,24 +1,61 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { createContext, useEffect, useState } from 'react';
+import { db } from '@/db/client';
+import { runs as runsTable, categories as categoriesTable } from '@/db/schema';
+import { seedDataIfEmpty } from '@/db/seed';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
+export type Run = {
+  id: number;
+  date: string;
+  distanceKm: number;
+  durationMin: number;
+  notes: string | null;
+  categoryId: number;
+  userId: number;
+  categoryName: string;
 };
 
+type RunContextType = {
+  runs: Run[];
+  setRuns: React.Dispatch<React.SetStateAction<Run[]>>;
+  reloadRuns: () => Promise<void>;
+};
+
+export const RunContext = createContext<RunContextType | null>(null);
+
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  const [runs, setRuns] = useState<Run[]>([]);
+
+  const reloadRuns = async () => {
+    const runRows = await db.select().from(runsTable);
+    const categoryRows = await db.select().from(categoriesTable);
+
+    const runsWithCategoryNames: Run[] = runRows.map((run) => {
+      const matchingCategory = categoryRows.find(
+        (category) => category.id === run.categoryId
+      );
+
+      return {
+        ...run,
+        categoryName: matchingCategory?.name ?? 'Unknown',
+      };
+    });
+
+    setRuns(runsWithCategoryNames);
+  };
+
+  useEffect(() => {
+    const loadData = async () => {
+      await seedDataIfEmpty();
+      await reloadRuns();
+    };
+
+    void loadData();
+  }, []);
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <RunContext.Provider value={{ runs, setRuns, reloadRuns }}>
+      <Stack />
+    </RunContext.Provider>
   );
 }
