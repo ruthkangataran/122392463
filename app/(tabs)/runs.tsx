@@ -12,7 +12,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Run, RunContext } from '../../_layout';
+import { Run, RunContext } from '../_layout';
 
 export default function RunIndexScreen() {
   const router = useRouter();
@@ -45,7 +45,7 @@ export default function RunIndexScreen() {
   });
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <ScreenHeader
         title="My Runs"
         subtitle={`${runs.length} runs logged`}
@@ -59,7 +59,7 @@ export default function RunIndexScreen() {
       <TextInput
         value={searchQuery}
         onChangeText={setSearchQuery}
-        placeholder="Search by name or major"
+        placeholder="Search by notes, date or category"
         style={styles.searchInput}
       />
 
@@ -103,7 +103,7 @@ export default function RunIndexScreen() {
           ))
         )}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 

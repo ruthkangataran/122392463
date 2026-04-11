@@ -13,6 +13,14 @@ export type Run = {
   categoryId: number;
   userId: number;
   categoryName: string;
+  categoryColor: string;
+};
+
+export type Category = {
+  id: number;
+  name: string;
+  color: string;
+  icon: string | null;
 };
 
 type RunContextType = {
@@ -38,6 +46,7 @@ export default function RootLayout() {
       return {
         ...run,
         categoryName: matchingCategory?.name ?? 'Unknown',
+          categoryColor: matchingCategory?.color ?? '#fff'
       };
     });
 
@@ -55,7 +64,20 @@ export default function RootLayout() {
 
   return (
     <RunContext.Provider value={{ runs, setRuns, reloadRuns }}>
-      <Stack />
+      <Stack screenOptions={{
+        headerStyle: {
+          backgroundColor: '#1446A0',
+        },
+        headerTintColor: '#fff',
+        headerTitleStyle: {
+          fontWeight: 'bold',
+        },
+          headerBackButtonDisplayMode: 'minimal',
+      }}>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="runs/[id]" options={{ title: 'Run Details', headerBackButtonDisplayMode: 'minimal' }} />
+      <Stack.Screen name="runs/[id]/edit" options={{ title: 'Edit Run', headerBackButtonDisplayMode: 'minimal' }} />
+      </Stack>
     </RunContext.Provider>
   );
 }

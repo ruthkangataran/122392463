@@ -27,18 +27,19 @@ export default function RunCard({ run }: Props) {
       onPress={openDetails}
       style={({ pressed }) => [
         styles.card,
+          { borderColor: run.categoryColor },
         pressed ? styles.cardPressed : null,
       ]}
     >
       <View>
         <Text style={styles.title}>
-          {run.distanceKm} km • {run.durationMin} min
+          {run.distanceKm} km {run.categoryName}
         </Text>
         <Text style={styles.date}>{run.date}</Text>
       </View>
 
       <View style={styles.tags}>
-        <InfoTag label="Category" value={run.categoryName} />
+        <InfoTag label="time" value={`${run.durationMin} mins`} />
         <InfoTag label="Pace" value={`${pace} min/km`} />
       </View>
 
