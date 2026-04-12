@@ -2,11 +2,12 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useContext } from 'react';
 import PrimaryButton from '@/components/ui/primary-button';
 import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { eq } from 'drizzle-orm';
 import { db } from '@/db/client';
 import { runs as runsTable } from '@/db/schema';
 import { Run, RunContext } from '../_layout';
+import { calculatePace } from '@/lib/utils';
+import StatCard from "@/components/StatCard";
 
 export default function RunDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -21,7 +22,7 @@ export default function RunDetail() {
 
   if (!run) return null;
 
-  const pace = (run.durationMin / run.distanceKm).toFixed(2);
+  const pace = calculatePace(run.distanceKm, run.durationMin);
   const categoryColor = run.categoryColor ?? '#94A3B8';
   const tintedBackground = `${categoryColor}10`;
 
@@ -62,17 +63,8 @@ export default function RunDetail() {
 
       {/* Stats grid */}
       <View style={styles.statsGrid}>
-        <View style={[styles.statCard, {borderColor: categoryColor}]}>
-          <Text style={styles.statLabel}>Duration</Text>
-          <Text style={styles.statValue}>{run.durationMin}</Text>
-          <Text style={styles.statUnit}>minutes</Text>
-        </View>
-
-        <View style={[styles.statCard, {borderColor: categoryColor}]}>
-          <Text style={styles.statLabel}>Pace</Text>
-          <Text style={styles.statValue}>{pace}</Text>
-          <Text style={styles.statUnit}>min/km</Text>
-        </View>
+          <StatCard label="Duration" value={run.durationMin} unit="minutes" borderColor={run.categoryColor}/>
+          <StatCard label="Pace" value={pace} unit="min/km" borderColor={run.categoryColor} />
       </View>
 
       {/* Notes */}
@@ -170,38 +162,11 @@ const styles = StyleSheet.create({
 
   // Stats grid
   statsGrid: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 16,
-  },
-  statCard: {
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderColor: '#E2E8F0',
-    borderRadius: 14,
-    borderWidth: 1,
-    flex: 1,
-    paddingVertical: 16,
-  },
-  statLabel: {
-    color: '#94A3B8',
-    fontSize: 12,
-    fontWeight: '600',
-    marginBottom: 4,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  statValue: {
-    color: '#0F172A',
-    fontSize: 28,
-    fontWeight: '800',
-  },
-  statUnit: {
-    color: '#64748B',
-    fontSize: 13,
-    fontWeight: '500',
-    marginTop: 2,
-  },
+   flexDirection: 'row',
+   flexWrap: 'wrap',
+   justifyContent: 'space-between',
+   marginBottom: 16,
+},
 
   // Notes
   notesCard: {

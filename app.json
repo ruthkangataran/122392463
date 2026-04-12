@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "122392463",
+    "name": "Steady Pace",
     "slug": "122392463",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/appicon.jpeg",
     "scheme": "122392463",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,

@@ -7,6 +7,7 @@ import { eq } from 'drizzle-orm';
 import { useContext, useEffect, useState } from 'react';
 import {Pressable, ScrollView, StyleSheet, Text, View,} from 'react-native';
 import { RunContext } from '../_layout';
+import { getStartOfWeek, getStartOfMonth } from '@/lib/utils';
 
 type Target = {
     id: number;
@@ -17,19 +18,6 @@ type Target = {
     userId: number;
 };
 
-function getStartofWeek(): string {
-    const now = new Date();
-    const day = now.getDay();
-    const diff = now.getDate() - day + (day === 0? -6 :1);
-    const monday = new Date(now.setDate(diff));
-    return monday.toISOString().split('T')[0];
-}
-
-function getStartOfMonth(): string {
-  const now = new Date();
-  const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-  return firstDay.toISOString().split('T')[0];
-}
 
 export default function TargetsScreen() {
     const context = useContext(RunContext);
@@ -57,7 +45,7 @@ export default function TargetsScreen() {
 
     if (!context) return null;
     const {runs} = context;
-    const weekStart = getStartofWeek()
+    const weekStart = getStartOfWeek()
     const thisWeekRuns = runs.filter((r) => r.date >= weekStart)
     const weeklyDistance = thisWeekRuns.reduce((sum, r) => sum + r.distanceKm, 0);
     const weeklyRunCount = thisWeekRuns.length;

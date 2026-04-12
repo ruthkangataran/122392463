@@ -2,6 +2,7 @@ import { Run } from '@/app/_layout';
 import InfoTag from '@/components/ui/info-tag';
 import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import {calculatePace} from "@/lib/utils";
 
 type Props = {
   run: Run;
@@ -16,7 +17,7 @@ export default function RunCard({ run }: Props) {
       params: { id: run.id.toString() },
     });
 
-  const pace = (run.durationMin / run.distanceKm).toFixed(2);
+  const pace = calculatePace(run.distanceKm, run.durationMin);
 
   const runSummary = `${run.distanceKm}km run on ${run.date}`;
 

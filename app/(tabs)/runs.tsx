@@ -11,7 +11,6 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Run, RunContext } from '../_layout';
 
 export default function RunIndexScreen() {
