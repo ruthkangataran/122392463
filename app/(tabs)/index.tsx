@@ -1,98 +1,160 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { useContext, useMemo } from 'react';
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+    Image
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { RunContext } from '../_layout';
+import StatCard from '@/components/StatCard';
+import RunCard from '@/components/RunCard';
+import { getStartOfWeek } from '@/lib/utils';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+type IoniconName = keyof typeof Ionicons.glyphMap;
+
+
+const colorMap: Record<string, string> = {
+  blue: '#1446A0',
+  orange: '#FF7F11',
+  pink: '#DB3069',
+  gold: '#F5D547',
+};
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/runs">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const router = useRouter();
+  const context = useContext(RunContext);
+  const runs = context?.runs ?? [];
+  const weekStart = getStartOfWeek();
+  const thisWeekRuns = useMemo(
+    () => runs.filter((r) => r.date >= weekStart),
+    [runs, weekStart]
+  );
+  const totalDistance = thisWeekRuns.reduce((sum, r) => sum + r.distanceKm, 0);
+  const totalRuns = thisWeekRuns.length;
+  const totalDuration = thisWeekRuns.reduce((sum, r) => sum + r.durationMin, 0);
+  const avgPace =
+    totalDistance > 0 ? (totalDuration / totalDistance).toFixed(2) : '0.00';
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  const recentRuns = useMemo(
+    () =>
+      [...runs]
+        .sort((a, b) => b.date.localeCompare(a.date))
+        .slice(0, 3),
+    [runs]
+  );
+    if (!context) return null;
+
+
+  return (
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}
+    >
+
+      {/* This week summary */}
+      <SectionTitle title="This Week" />
+      <View style={styles.statsGrid}>
+        <StatCard label="Distance" value={totalDistance.toFixed(1)} unit="km" icon="footsteps-outline" color="blue" />
+        <StatCard label="Runs" value={totalRuns} unit="sessions" icon="fitness-outline" color="orange" />
+        <StatCard label="Duration" value={totalDuration} unit="min" icon="time-outline" color="pink" />
+        <StatCard label="Avg Pace" value={avgPace} unit="min/km" icon="speedometer-outline" color="green" />
+      </View>
+
+
+      {/* Recent Runs */}
+      <Pressable onPress={() => router.push('/(tabs)/runs')}>
+        <SectionTitle title="Recent Runs" />
+      </Pressable>
+
+      {recentRuns.length === 0 ? (
+        <View style={styles.emptyCard}>
+          <Ionicons name="walk-outline" size={32} color="#94A3B8" />
+          <Text style={styles.emptyText}>No runs logged yet</Text>
+          <Text style={styles.emptySubtext}>Tap Log Run to get started!</Text>
+        </View>
+      ) : (
+        recentRuns.map((run) => <RunCard key={run.id} run={run} />)
+      )}
+
+      {/* Footer */}
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>SteadyPace</Text>
+        <Text style={styles.footerSubtext}>Ruth Kangataran 2026</Text>
+      </View>
+    </ScrollView>
   );
 }
 
+function SectionTitle({ title }: { title: string }) {
+  return <Text style={styles.sectionTitle}>{title}</Text>;
+}
+
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    backgroundColor: '#EBEFFF',
+    flex: 1,
   },
-  stepContainer: {
-    gap: 8,
+  content: {
+    padding: 20,
+    paddingBottom: 40,
+  },
+
+  // Section
+  sectionTitle: {
+    color: '#0F172A',
+    fontSize: 17,
+    fontWeight: '700',
+    marginBottom: 8,
+    marginTop: 22,
+  },
+
+  // Stats
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+
+
+  // Empty state
+  emptyCard: {
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderColor: '#E2E8F0',
+    borderRadius: 14,
+    borderWidth: 1,
+    paddingVertical: 28,
+  },
+  emptyText: {
+    color: '#334155',
+    fontSize: 15,
+    fontWeight: '600',
+    marginTop: 8,
+  },
+  emptySubtext: {
+    color: '#94A3B8',
+    fontSize: 13,
+    marginTop: 4,
+  },
+
+  // Footer
+  footer: {
+    alignItems: 'center',
+    marginTop: 28,
     marginBottom: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  footerText: {
+    color: '#94A3B8',
+    fontSize: 12,
+  },
+  footerSubtext: {
+    color: '#CBD5E1',
+    fontSize: 10,
+    marginTop: 2,
   },
 });

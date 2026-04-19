@@ -1,11 +1,16 @@
-import { Tabs } from 'expo-router';
+import { Tabs, Redirect, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useColorScheme } from 'react-native';
+import { useColorScheme, Pressable, Image } from 'react-native';
 import { Colors } from '@/constants/theme';
 import Octicons from '@expo/vector-icons/Octicons';
+import { useAuth } from '@/context/AuthContext';
 
 export default function TabsLayout() {
-  const colorScheme = useColorScheme();
+    const { authState } = useAuth();
+    const colorScheme = useColorScheme();
+    const router = useRouter();
+  if (!authState.authenticated) return <Redirect href="/login" />;
+
   const theme = colorScheme === 'dark' ? Colors.dark : Colors.light;
 
   return (
@@ -29,12 +34,27 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Steady Pace',
-          tabBarLabel: 'Home',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="home" size={size} color={color} />
-          ),
-        }}
+    title: 'Steady Pace',
+    tabBarLabel: 'Home',
+    tabBarIcon: ({ color, size }) => (
+      <MaterialIcons name="home" size={size} color={color} />
+    ),
+    headerRight: () => (
+      <Pressable
+        onPress={() => router.push('/(tabs)/profile')}
+        style={{ marginRight: 14 }}
+      >
+        <MaterialIcons name="person" size={26} color="#fff" />
+      </Pressable>
+    ),
+    headerLeft: () => (
+      <Image
+        source={require('@/assets/images/Untitled design-2.png')}
+        style={{ width: 32, height: 52, marginLeft: 14 }}
+        resizeMode="contain"
+      />
+    ),
+  }}
       />
 
       <Tabs.Screen
@@ -70,16 +90,6 @@ export default function TabsLayout() {
         }}
       />
 
-      <Tabs.Screen
-        name="profile"
-        options={{
-          title: 'Profile',
-          tabBarLabel: 'Profile',
-          tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="person" size={size} color={color} />
-          ),
-        }}
-      />
         <Tabs.Screen
         name="targets"
         options={{
@@ -92,7 +102,7 @@ export default function TabsLayout() {
       />
 
       <Tabs.Screen
-        name="races"
+        name="profile"
         options={{
           href: null,
           headerShown: false,

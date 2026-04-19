@@ -108,7 +108,7 @@ export default function RunIndexScreen() {
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: '#F8FAFC',
+    backgroundColor: '#EBEFFF',
     flex: 1,
     paddingHorizontal: 18,
     paddingTop: 10,

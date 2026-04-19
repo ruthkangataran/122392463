@@ -106,7 +106,7 @@ export default function AddRun() {
 
 const styles = StyleSheet.create({
   safeArea: {
-    backgroundColor: '#F8FAFC',
+    backgroundColor: '#EBEFFF',
     flex: 1,
     padding: 20,
   },
