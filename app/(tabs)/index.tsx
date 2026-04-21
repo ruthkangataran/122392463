@@ -13,16 +13,11 @@ import { RunContext } from '../_layout';
 import StatCard from '@/components/StatCard';
 import RunCard from '@/components/RunCard';
 import { getStartOfWeek } from '@/lib/utils';
+import StretchSuggestion from "@/components/Exercises";
+import StreakCard from "@/components/SteakCard";
 
 type IoniconName = keyof typeof Ionicons.glyphMap;
 
-
-const colorMap: Record<string, string> = {
-  blue: '#1446A0',
-  orange: '#FF7F11',
-  pink: '#DB3069',
-  gold: '#F5D547',
-};
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -64,6 +59,8 @@ export default function HomeScreen() {
         <StatCard label="Duration" value={totalDuration} unit="min" icon="time-outline" color="pink" />
         <StatCard label="Avg Pace" value={avgPace} unit="min/km" icon="speedometer-outline" color="green" />
       </View>
+        <StreakCard runs={runs} />
+        <StretchSuggestion />
 
 
       {/* Recent Runs */}

@@ -35,6 +35,8 @@ export default function Register() {
         const result = await onRegister(name, email, password);
         if (result?.error) {
             Alert.alert("registration failed", result.msg ?? "please try again");
+        } else {
+            router.replace('/');
         }
     };
 // https://claude.ai/share/5c1f2ff1-4b7d-4b29-8c05-2a35bebf9b65

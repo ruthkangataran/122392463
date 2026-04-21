@@ -17,7 +17,7 @@ export default function RunCard({ run }: Props) {
       params: { id: run.id.toString() },
     });
 
-  const pace = calculatePace(run.distanceKm, run.durationMin);
+  const pace = calculatePace(run.durationMin, run.distanceKm);
 
   const runSummary = `${run.distanceKm}km run on ${run.date}`;
 

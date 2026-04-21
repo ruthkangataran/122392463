@@ -8,6 +8,7 @@ import { useContext, useEffect, useState } from 'react';
 import {Pressable, ScrollView, StyleSheet, Text, View,} from 'react-native';
 import { RunContext } from '../_layout';
 import { getStartOfWeek, getStartOfMonth } from '@/lib/utils';
+import { useAuth } from '@/context/AuthContext';
 
 type Target = {
     id: number;
@@ -26,13 +27,15 @@ export default function TargetsScreen() {
     const [metricType, setMetricType] = useState<'distance' | 'runs'>("distance");
     const [targetValue, setTargetValue] = useState('');
     const [period, setPeriod] = useState<'weekly' | 'monthly'>('weekly');
+    const { authState } = useAuth();
+    const userId = authState.user?.id ?? 1;
 
     useEffect(() => {
         void loadTargets();
     }, []);
 
     const loadTargets = async () => {
-        const rows = await db.select().from(targetsTable);
+        const rows = await db.select().from(targetsTable).where(eq(targetsTable.userId, userId));
         setTargetList(rows);
     };
 
@@ -78,7 +81,7 @@ export default function TargetsScreen() {
             metricType: metricType,
             targetValue: value,
             categoryId: null,
-            userId: 1,
+            userId: userId,
         });
 
         setTargetValue('');

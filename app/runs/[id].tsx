@@ -22,7 +22,7 @@ export default function RunDetail() {
 
   if (!run) return null;
 
-  const pace = calculatePace(run.distanceKm, run.durationMin);
+  const pace = calculatePace(run.durationMin, run.distanceKm);
   const categoryColor = run.categoryColor ?? '#94A3B8';
   const tintedBackground = `${categoryColor}10`;
 

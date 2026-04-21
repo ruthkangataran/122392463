@@ -105,7 +105,8 @@ export default function TabsLayout() {
         name="profile"
         options={{
           href: null,
-          headerShown: false,
+          title: 'Profile',
+            headerBackButtonDisplayMode: 'minimal',
         }}
       />
     </Tabs>

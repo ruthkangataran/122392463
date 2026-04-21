@@ -1,9 +1,17 @@
-import {View, Text, Alert, Pressable, ScrollView, StyleSheet } from 'react-native';
+import {View, Text, Alert, Pressable, ScrollView, StyleSheet, Platform } from 'react-native';
 import { useContext } from 'react';
 import {useAuth} from "@/context/AuthContext";
 import {RunContext} from "@/app/_layout";
 import {Ionicons} from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+// https://docs.expo.dev/versions/latest/sdk/filesystem-legacy/
+// https://docs.expo.dev/versions/latest/sdk/sharing/
+// https://docs.expo.dev/versions/latest/sdk/filesystem/#filesystemwriteasstringasyncfileuri-contents-options
+// https://www.reddit.com/r/reactnative/comments/17sbxcy/export_app_data_to_csv_with_expo/
+// https://medium.com/@fabi.mofar/downloading-and-saving-files-in-react-native-expo-5b3499adda84
+import * as FileSystem from 'expo-file-system/legacy';
+import {shareAsync} from "expo-sharing";
+import StreakCard from '@/components/SteakCard';
 
 type IoniconName = keyof typeof Ionicons.glyphMap;
 type MenuItem = {
@@ -16,6 +24,7 @@ export default function Profile() {
     const {authState, onLogout, onDeleteAccount} = useAuth();
     const context = useContext(RunContext);
     const user = authState.user;
+    const runs = context?.runs ?? [];
     const router = useRouter()
     if (!user) return null;
 
@@ -32,11 +41,40 @@ export default function Profile() {
             { text: "delete", onPress: onDeleteAccount, style: "destructive"},
         ]);
     };
+
+    const exportCSV = async () => {
+      try {
+          const header = 'Date, Distance (km), Duration (min), Pace (min/km), Category, Notes\n';
+          const rows = runs.map((r) => {
+              const pace = (r.durationMin / r.distanceKm).toFixed(2);
+              const notes = (r.notes ?? '').replace(/,/g, '');
+              return `${r.date}, ${r.distanceKm}, ${r.durationMin}, ${pace}, ${r.categoryName}, ${notes}`;
+          }).join('\n');
+
+          const csv = header + rows;
+          const fileUri = FileSystem.documentDirectory + 'steadypace_export.csv';
+
+          await FileSystem.writeAsStringAsync(fileUri, csv, {
+              encoding: FileSystem.EncodingType.UTF8,
+          });
+
+          await shareAsync(fileUri, {
+              mimeType: 'text/csv',
+              dialogTitle: 'Export your running data'
+          });
+      } catch (e) {
+          Alert.alert('Export failed', 'Could not export your data');
+          console.error(e);
+      }
+  }
   const menuItems: MenuItem[] = [
     { icon: 'fitness-outline', label: 'My Runs', onPress: () => router.push('/(tabs)/runs') },
     { icon: 'trophy-outline', label: 'Targets', onPress: () => router.push('/(tabs)/targets') },
     { icon: 'bar-chart-outline', label: 'Insights', onPress: () => router.push('/(tabs)/insights') },
+    { icon: 'download-outline', label: 'Export Runs', onPress: exportCSV },
   ];
+
+
    return (
     <ScrollView
       style={styles.container}
@@ -53,6 +91,7 @@ export default function Profile() {
         <Text style={styles.userName}>{user.name}</Text>
         <Text style={styles.userEmail}>{user.email}</Text>
       </View>
+        <StreakCard runs={runs} />
 
 
       {/* Menu section */}

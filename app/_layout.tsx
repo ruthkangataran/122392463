@@ -40,13 +40,14 @@ export default function RootLayout() {
     );
 }
 function RootNavigator(){
+    const { authState } = useAuth();
   const [runs, setRuns] = useState<Run[]>([]);
 
   const reloadRuns = async () => {
     const runRows = await db.select().from(runsTable);
     const categoryRows = await db.select().from(categoriesTable);
 
-    const runsWithCategoryNames: Run[] = runRows.map((run) => {
+    const runsWithCategoryNames: Run[] = runRows.filter((run) => run.userId === authState.user?.id).map((run) => {
       const matchingCategory = categoryRows.find(
         (category) => category.id === run.categoryId
       );
@@ -68,7 +69,7 @@ function RootNavigator(){
     };
 
     void loadData();
-  }, []);
+  }, [authState.user?.id]);
 
   return (
     <RunContext.Provider value={{ runs, setRuns, reloadRuns }}>

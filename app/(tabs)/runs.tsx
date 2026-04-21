@@ -3,21 +3,18 @@ import PrimaryButton from '@/components/ui/primary-button';
 import ScreenHeader from '@/components/ui/screen-header';
 import { useRouter } from 'expo-router';
 import { useContext, useState } from 'react';
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import {Pressable, ScrollView, StyleSheet, Text, TextInput, View,} from 'react-native';
 import { Run, RunContext } from '../_layout';
+import {getStartOfWeek, getStartOfMonth} from "@/lib/utils";
+
+type DateFilter = 'All' | 'This Week' | 'This Month';
 
 export default function RunIndexScreen() {
   const router = useRouter();
   const context = useContext(RunContext);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [dateFilter, setDateFilter] = useState<DateFilter>('All');
 
   if (!context) return null;
 
@@ -30,6 +27,9 @@ export default function RunIndexScreen() {
     ),
   ];
 
+  const weekStart = getStartOfWeek();
+  const monthStart = getStartOfMonth();
+
   const filteredRuns = runs.filter((run: Run) => {
     const matchesSearch =
       normalizedQuery.length === 0 ||
@@ -40,7 +40,12 @@ export default function RunIndexScreen() {
     const matchesCategory =
       selectedCategory === 'All' || String(run.categoryName) === selectedCategory;
 
-    return matchesSearch && matchesCategory;
+    const matchesDate =
+        dateFilter === "All" ||
+        ( dateFilter === "This Week" && run.date >=weekStart) ||
+        (dateFilter === 'This Month' && run.date >= monthStart);
+
+    return matchesSearch && matchesCategory && matchesDate;
   });
 
   return (
@@ -61,6 +66,32 @@ export default function RunIndexScreen() {
         placeholder="Search by notes, date or category"
         style={styles.searchInput}
       />
+        <View style={styles.filterRow}>
+        {(['All', 'This Week', 'This Month'] as DateFilter[]).map((option) => {
+          const isSelected = dateFilter === option;
+          return (
+            <Pressable
+              key={option}
+              accessibilityLabel={`Filter by ${option}`}
+              accessibilityRole="button"
+              onPress={() => setDateFilter(option)}
+              style={[
+                styles.dateFilterButton,
+                isSelected && styles.dateFilterButtonSelected,
+              ]}
+            >
+              <Text
+                style={[
+                  styles.dateFilterText,
+                  isSelected && styles.dateFilterTextSelected,
+                ]}
+              >
+                {option}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </View>
 
       <View style={styles.filterRow}>
         {categoryOptions.map((category) => {
@@ -116,6 +147,25 @@ const styles = StyleSheet.create({
   listContent: {
     paddingBottom: 24,
     paddingTop: 14,
+  },
+    dateFilterButton: {
+    backgroundColor: '#FFFFFF',
+    borderColor: '#1446A0',
+    borderRadius: 999,
+    borderWidth: 1,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+  },
+  dateFilterButtonSelected: {
+    backgroundColor: '#1446A0',
+  },
+  dateFilterText: {
+    color: '#1446A0',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+    dateFilterTextSelected: {
+    color: '#FFFFFF',
   },
   searchInput: {
     backgroundColor: '#FFFFFF',

@@ -8,6 +8,7 @@ import {useContext, useEffect, useState} from 'react';
 import { ScrollView, StyleSheet, View, Pressable, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RunContext, Category } from '../_layout';
+import {useAuth} from "@/context/AuthContext";
 
 
 export default function AddRun() {
@@ -19,6 +20,8 @@ export default function AddRun() {
   const [notes, setNotes] = useState('');
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
   const [categoryList, setCategoryList] = useState<Category[]>([]);
+  const { authState } = useAuth();
+  const userId = authState.user?.id ?? 1;
 
     useEffect(() => {
         const loadCategories = async () => {
@@ -42,7 +45,7 @@ export default function AddRun() {
       categoryId: selectedCategoryId,
       durationMin: parseInt(duration),
       notes: notes.trim() || null,
-      userId: 1,
+      userId: userId,
     });
 
     await reloadRuns();
