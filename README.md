@@ -1,50 +1,102 @@
-# Welcome to your Expo app 👋
+# SteadyPace 
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**IS4447 Mobile Application Development Project**
+**Option A: Habit Tracker** (Specialised Running Tracker)
+**Student:** Ruth Kangataran (122392463)
 
-## Get started
+---
 
-1. Install dependencies
+## GitHub Repository
 
-   ```bash
-   npm install
-   ```
+https://github.com/ruthkangataran/122392463
 
-2. Start the app
+## Expo Link
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+exp://u.expo.dev/f84f7cf7-29a2-4862-acc0-fba428b790f7?channel-name=preview
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+![QR Code](https://qr.expo.dev/eas-update?updateId=740d0c7f-46f8-410d-9c63-bbd945ae1e10&appScheme=steadypace&host=u.expo.dev)
 
-## Learn more
+---
 
-To learn more about developing your project with Expo, look at the following resources:
+## About
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+SteadyPace is a mobile running tracker built with React Native (Expo) and Drizzle ORM with SQLite. Users can log runs, set training targets, and analyse their progress through charts and summaries.
 
-## Join the community
+### Features
 
-Join our community of developers creating universal apps.
+- Log, view, edit, and delete runs with distance, duration, category, and notes
+- Create and manage custom run categories with colours
+- Set weekly and monthly targets with progress tracking
+- Insights screen with bar charts and category breakdown
+- Search and filter runs by text, category, and date range
+- User registration, login, logout, and account deletion
+- Light/dark mode toggle with persistence
+- Pre-run stretch suggestions via API Ninjas
+- Streak tracking for consecutive run days
+- CSV export of run data
+- Seed data with 3 users and 80+ runs
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
+
+## Setup Instructions
+
+### Prerequisites
+
+- Node.js (v18+)
+- Expo Go app on your phone
+
+### Installation
+
+```bash
+git clone https://github.com/ruthkangataran/122392463.git
+cd 122392463
+npm install
+```
+
+### Environment Variables
+
+Create a `.env` file in the project root:
+
+```
+EXPO_PUBLIC_API_KEY=your_api_ninjas_key_here
+```
+
+Get a free API key from https://api-ninjas.com
+
+### Running the App
+
+```bash
+npx expo start
+```
+
+Scan the QR code with Expo Go (iOS Camera or Android Expo Go app).
+
+### Running Tests
+
+```bash
+npm test
+```
+
+---
+
+## Tech Stack
+
+- React Native (Expo SDK 54)
+- TypeScript
+- Drizzle ORM + SQLite
+- Expo Router (file-based navigation)
+- react-native-gifted-charts
+- expo-file-system + expo-sharing (CSV export)
+- API Ninjas (exercises endpoint)
+
+---
+
+## Demo Credentials
+
+| User    | Email               | Password |
+|---------|---------------------|----------|
+| Ruth    | ruth@example.com    | test123  |
+| Conor   | conor@example.com   | test123  |
+| Saoirse | saoirse@example.com | test123  |
