@@ -3,12 +3,14 @@ import InfoTag from '@/components/ui/info-tag';
 import { useRouter } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import {calculatePace} from "@/lib/utils";
+import {useTheme} from "@/context/ThemeContext";
 
 type Props = {
   run: Run;
 };
 
 export default function RunCard({ run }: Props) {
+    const {theme} = useTheme();
   const router = useRouter();
 
   const openDetails = () =>
@@ -28,15 +30,15 @@ export default function RunCard({ run }: Props) {
       onPress={openDetails}
       style={({ pressed }) => [
         styles.card,
-          { borderColor: run.categoryColor },
+        { backgroundColor: theme.card, borderColor: run.categoryColor },
         pressed ? styles.cardPressed : null,
       ]}
     >
       <View>
-        <Text style={styles.title}>
+        <Text style={[styles.title, { color: theme.text }]}>
           {run.distanceKm} km {run.categoryName}
         </Text>
-        <Text style={styles.date}>{run.date}</Text>
+        <Text style={[styles.date, { color: theme.muted }]}>{run.date}</Text>
       </View>
 
       <View style={styles.tags}>
@@ -45,7 +47,7 @@ export default function RunCard({ run }: Props) {
       </View>
 
       {run.notes ? (
-        <Text style={styles.notes}>{run.notes}</Text>
+        <Text style={[styles.notes, {color: theme.text}]}>{run.notes}</Text>
       ) : null}
     </Pressable>
   );

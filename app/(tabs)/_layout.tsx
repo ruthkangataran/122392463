@@ -4,14 +4,16 @@ import { useColorScheme, Pressable, Image } from 'react-native';
 import { Colors } from '@/constants/theme';
 import Octicons from '@expo/vector-icons/Octicons';
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function TabsLayout() {
     const { authState } = useAuth();
     const colorScheme = useColorScheme();
     const router = useRouter();
+    const { isDark, theme } = useTheme();
   if (!authState.authenticated) return <Redirect href="/login" />;
 
-  const theme = colorScheme === 'dark' ? Colors.dark : Colors.light;
+  //const theme = colorScheme === 'dark' ? Colors.dark : Colors.light;
 
   return (
     <Tabs
@@ -28,7 +30,7 @@ export default function TabsLayout() {
           borderTopColor: theme.border,
         },
         tabBarActiveTintColor: '#fff',
-        tabBarInactiveTintColor: colorScheme === 'dark' ? theme.muted : '#D9E2F2',
+        tabBarInactiveTintColor: isDark ? theme.muted : '#D9E2F2',
       }}
     >
       <Tabs.Screen
@@ -106,6 +108,14 @@ export default function TabsLayout() {
         options={{
           href: null,
           title: 'Profile',
+            headerBackButtonDisplayMode: 'minimal',
+        }}
+      />
+      <Tabs.Screen
+        name="categories"
+        options={{
+          href: null,
+          title: 'Edit Categories',
             headerBackButtonDisplayMode: 'minimal',
         }}
       />

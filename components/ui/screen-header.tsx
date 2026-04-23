@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native';
+import {useTheme} from "@/context/ThemeContext";
 
 type Props = {
   title: string;
@@ -6,9 +7,10 @@ type Props = {
 };
 
 export default function ScreenHeader({ title, subtitle }: Props) {
+    const {theme} = useTheme();
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{title}</Text>
+      <Text style={[styles.title, {color: theme.text}]}>{title}</Text>
       {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
     </View>
   );

@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import {useTheme} from "@/context/ThemeContext";
 
 type Exercise = {
   name: string;
@@ -16,12 +17,14 @@ export default function StretchSuggestion() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const { theme } = useTheme();
 
   const fetchExercise = async () => {
     try {
       setLoading(true);
       setError(false);
       setExpanded(false);
+
 
       const res = await fetch('https://api.api-ninjas.com/v1/exercises?type=stretching', {
         headers: {
@@ -50,7 +53,7 @@ export default function StretchSuggestion() {
 
   if (loading) {
     return (
-      <View style={styles.card}>
+      <View style={[styles.card, {backgroundColor: theme.card}]}>
         <ActivityIndicator size="small" color="#1446A0" />
         <Text style={styles.loadingText}>Loading stretch...</Text>
       </View>
@@ -59,7 +62,7 @@ export default function StretchSuggestion() {
 
   if (error || !exercise) {
     return (
-      <View style={styles.card}>
+      <View style={[styles.card, {backgroundColor: theme.card}]}>
         <Text style={styles.errorText}>Could not load stretch suggestion</Text>
         <Pressable onPress={fetchExercise} style={styles.retryButton}>
           <Text style={styles.retryText}>Tap to retry</Text>
@@ -69,7 +72,7 @@ export default function StretchSuggestion() {
   }
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, {backgroundColor: theme.card}]}>
       <View style={styles.header}>
         <Ionicons name="body-outline" size={22} color="#1446A0" />
         <Text style={styles.label}>Pre-run warmup</Text>

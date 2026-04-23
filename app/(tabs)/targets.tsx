@@ -9,6 +9,7 @@ import {Pressable, ScrollView, StyleSheet, Text, View,} from 'react-native';
 import { RunContext } from '../_layout';
 import { getStartOfWeek, getStartOfMonth } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
+import {useTheme} from "@/context/ThemeContext";
 
 type Target = {
     id: number;
@@ -27,6 +28,7 @@ export default function TargetsScreen() {
     const [metricType, setMetricType] = useState<'distance' | 'runs'>("distance");
     const [targetValue, setTargetValue] = useState('');
     const [period, setPeriod] = useState<'weekly' | 'monthly'>('weekly');
+    const {theme} = useTheme();
     const { authState } = useAuth();
     const userId = authState.user?.id ?? 1;
 
@@ -95,7 +97,7 @@ export default function TargetsScreen() {
     };
 
 return (
-    <View style={styles.safeArea}>
+    <View style={[styles.safeArea, {backgroundColor: theme.background}]}>
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
@@ -107,7 +109,7 @@ return (
 
         {/* Target Cards */}
         {targetList.length === 0 ? (
-          <Text style={styles.emptyText}>
+          <Text style={[styles.emptyText, {color: theme.text}]}>
             No targets set yet. Add one to start tracking your goals!
           </Text>
         ) : (
@@ -126,10 +128,10 @@ return (
             const met = percentage >= 100;
 
             return (
-              <View key={target.id} style={styles.targetCard}>
+              <View key={target.id} style={[styles.targetCard, {backgroundColor: theme.card}]}>
                 <View style={styles.targetHeader}>
                   <View>
-                    <Text style={styles.targetTitle}>
+                    <Text style={[styles.targetTitle, {color: theme.text}]}>
                       {target.targetValue} {unit} / {target.period === 'weekly' ? 'week' : 'month'}
                     </Text>
                     <Text style={styles.targetSubtitle}>

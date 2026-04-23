@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Run } from '@/app/_layout';
+import {useTheme} from "@/context/ThemeContext";
 
 type Props = {
   runs: Run[];
@@ -50,28 +51,36 @@ export default function StreakCard({ runs }: Props) {
   const streak = calculateSteak(runs);
   const message = encouragementMessage(streak);
   const isActive = streak > 0;
+  const {theme, isDark} = useTheme();
 
   return (
-    <View style={[styles.card, isActive ? styles.cardActive : null]}>
+    <View style={[
+      styles.card,
+      { backgroundColor: theme.card, borderColor: theme.border },
+      isActive ? { borderColor: '#FF7F11' } : null,
+    ]}>
       <View style={styles.row}>
-        <View style={[styles.iconCircle, isActive ? styles.iconCircleActive : null]}>
+        <View style={[
+          styles.iconCircle,
+          { backgroundColor: isDark ? '#1E293B' : '#F1F5F9' },
+          isActive ? { backgroundColor: isDark ? '#3B2000' : '#FFF3E0' } : null,
+        ]}>
           <Ionicons
             name={isActive ? 'flame' : 'flame-outline'}
             size={24}
-            color={isActive ? '#FF7F11' : '#94A3B8'}
+            color={isActive ? '#FF7F11' : theme.muted}
           />
         </View>
         <View style={styles.info}>
-          <Text style={styles.streakNumber}>
-            {streak} { 'Day Streak'}
+          <Text style={[styles.streakNumber, { color: theme.text }]}>
+            {streak} {'Day Streak'}
           </Text>
-          <Text style={styles.message}>{message}</Text>
+          <Text style={[styles.message, { color: theme.muted }]}>{message}</Text>
         </View>
       </View>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#FFFFFF',

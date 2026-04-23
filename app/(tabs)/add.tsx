@@ -6,9 +6,9 @@ import { categories as categoriesTable, runs as runsTable } from '@/db/schema';
 import { useRouter } from 'expo-router';
 import {useContext, useEffect, useState} from 'react';
 import { ScrollView, StyleSheet, View, Pressable, Text } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { RunContext, Category } from '../_layout';
 import {useAuth} from "@/context/AuthContext";
+import {useTheme} from "@/context/ThemeContext";
 
 
 export default function AddRun() {
@@ -22,6 +22,7 @@ export default function AddRun() {
   const [categoryList, setCategoryList] = useState<Category[]>([]);
   const { authState } = useAuth();
   const userId = authState.user?.id ?? 1;
+  const {theme} = useTheme();
 
     useEffect(() => {
         const loadCategories = async () => {
@@ -53,7 +54,7 @@ export default function AddRun() {
   };
 
   return (
-    <View style={styles.safeArea}>
+    <View style={[styles.safeArea, {backgroundColor: theme.background}]}>
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
@@ -66,7 +67,7 @@ export default function AddRun() {
           <FormField label="Duration (min)" value={duration} onChangeText={setDuration} placeholder="e.g. 30" />
           <FormField label="Notes" value={notes} onChangeText={setNotes} placeholder="How did it feel?" />
 
-          <Text style={styles.label}>Category</Text>
+          <Text style={[styles.label, {color: theme.text}]}>Category</Text>
           <View style={styles.categoryRow}>
             {categoryList.map((cat) => {
               const isSelected = selectedCategoryId === cat.id;

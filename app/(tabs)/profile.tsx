@@ -12,6 +12,7 @@ import { useRouter } from 'expo-router';
 import * as FileSystem from 'expo-file-system/legacy';
 import {shareAsync} from "expo-sharing";
 import StreakCard from '@/components/SteakCard';
+import { useTheme } from '@/context/ThemeContext';
 
 type IoniconName = keyof typeof Ionicons.glyphMap;
 type MenuItem = {
@@ -25,7 +26,8 @@ export default function Profile() {
     const context = useContext(RunContext);
     const user = authState.user;
     const runs = context?.runs ?? [];
-    const router = useRouter()
+    const router = useRouter();
+    const { mode, setMode, theme } = useTheme();
     if (!user) return null;
 
     const confirmLogout = () => {
@@ -67,17 +69,30 @@ export default function Profile() {
           console.error(e);
       }
   }
+
+  const cycleTheme = () => {
+  if (mode === 'system') setMode('light');
+  else if (mode === 'light') setMode('dark');
+  else setMode('system');
+};
+
   const menuItems: MenuItem[] = [
     { icon: 'fitness-outline', label: 'My Runs', onPress: () => router.push('/(tabs)/runs') },
     { icon: 'trophy-outline', label: 'Targets', onPress: () => router.push('/(tabs)/targets') },
     { icon: 'bar-chart-outline', label: 'Insights', onPress: () => router.push('/(tabs)/insights') },
+    { icon: 'list-outline', label: 'Edit Categories', onPress: () => router.push('/(tabs)/categories') },
     { icon: 'download-outline', label: 'Export Runs', onPress: exportCSV },
+      {
+  icon: mode === 'dark' ? 'moon' : mode === 'light' ? 'sunny' : 'phone-portrait-outline',
+  label: `Theme: ${mode.charAt(0).toUpperCase() + mode.slice(1)}`,
+  onPress: cycleTheme,
+},
   ];
 
 
    return (
     <ScrollView
-      style={styles.container}
+      style={[styles.container, {backgroundColor: theme.background}]}
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
@@ -88,15 +103,13 @@ export default function Profile() {
             <Ionicons name="person" size={40} color="#1446A0" />
           </View>
         </View>
-        <Text style={styles.userName}>{user.name}</Text>
-        <Text style={styles.userEmail}>{user.email}</Text>
+        <Text style={[styles.userName, {color: theme.text}]}>{user.name}</Text>
+        <Text style={[styles.userEmail, {color: theme.text}]}>{user.email}</Text>
       </View>
         <StreakCard runs={runs} />
 
-
-      {/* Menu section */}
       <Text style={styles.sectionTitle}>MY STUFF</Text>
-      <View style={styles.menuCard}>
+      <View style={[styles.menuCard, {backgroundColor: theme.card}]}>
         {menuItems.map((item, index) => (
           <Pressable
             key={item.label}
@@ -109,7 +122,7 @@ export default function Profile() {
             ]}
           >
             <Ionicons name={item.icon} size={22} color="#1446A0" style={styles.menuIcon} />
-            <Text style={styles.menuLabel}>{item.label}</Text>
+            <Text style={[styles.menuLabel, {color: theme.text}]}>{item.label}</Text>
             <Ionicons name="chevron-forward" size={18} color="#94A3B8" />
           </Pressable>
         ))}
@@ -117,7 +130,7 @@ export default function Profile() {
 
       {/* Account section */}
       <Text style={styles.sectionTitle}>ACCOUNT</Text>
-      <View style={styles.menuCard}>
+      <View style={[styles.menuCard, {backgroundColor: theme.card}]}>
         <Pressable
           accessibilityLabel="Log out"
           accessibilityRole="button"
@@ -125,7 +138,7 @@ export default function Profile() {
           style={[styles.menuRow, styles.menuRowBorder]}
         >
           <Ionicons name="log-out-outline" size={22} color="#1446A0" style={styles.menuIcon} />
-          <Text style={styles.menuLabel}>Log out</Text>
+          <Text style={[styles.menuLabel, {color: theme.text}]}>Log out</Text>
           <Ionicons name="chevron-forward" size={18} color="#94A3B8" />
         </Pressable>
 

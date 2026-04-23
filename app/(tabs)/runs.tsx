@@ -6,6 +6,7 @@ import { useContext, useState } from 'react';
 import {Pressable, ScrollView, StyleSheet, Text, TextInput, View,} from 'react-native';
 import { Run, RunContext } from '../_layout';
 import {getStartOfWeek, getStartOfMonth} from "@/lib/utils";
+import {useTheme} from "@/context/ThemeContext";
 
 type DateFilter = 'All' | 'This Week' | 'This Month';
 
@@ -15,11 +16,14 @@ export default function RunIndexScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [dateFilter, setDateFilter] = useState<DateFilter>('All');
+  const {theme} = useTheme();
 
   if (!context) return null;
 
   const { runs } = context;
   const normalizedQuery = searchQuery.trim().toLowerCase();
+
+  // making the category options
   const categoryOptions = [
     'All',
     ...Array.from(new Set(runs.map((run: Run) => String(run.categoryName)))).sort(
@@ -29,7 +33,7 @@ export default function RunIndexScreen() {
 
   const weekStart = getStartOfWeek();
   const monthStart = getStartOfMonth();
-
+// filtering/searching the runs based on notes, date or the category
   const filteredRuns = runs.filter((run: Run) => {
     const matchesSearch =
       normalizedQuery.length === 0 ||
@@ -49,7 +53,7 @@ export default function RunIndexScreen() {
   });
 
   return (
-    <View style={styles.safeArea}>
+    <View style={[styles.safeArea, {backgroundColor: theme.background}]}>
       <ScreenHeader
         title="My Runs"
         subtitle={`${runs.length} runs logged`}
@@ -64,7 +68,7 @@ export default function RunIndexScreen() {
         value={searchQuery}
         onChangeText={setSearchQuery}
         placeholder="Search by notes, date or category"
-        style={styles.searchInput}
+        style={[styles.searchInput, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text }]}
       />
         <View style={styles.filterRow}>
         {(['All', 'This Week', 'This Month'] as DateFilter[]).map((option) => {

@@ -4,6 +4,7 @@ import { db } from '@/db/client';
 import { runs as runsTable, categories as categoriesTable } from '@/db/schema';
 import { seedDataIfEmpty } from '@/db/seed';
 import {AuthProvider, useAuth} from "@/context/AuthContext";
+import { ThemeProvider } from '@/context/ThemeContext';
 
 export type Run = {
   id: number;
@@ -34,9 +35,11 @@ export const RunContext = createContext<RunContextType | null>(null);
 
 export default function RootLayout() {
     return (
+        <ThemeProvider>
         <AuthProvider>
             <RootNavigator/>
         </AuthProvider>
+        </ThemeProvider>
     );
 }
 function RootNavigator(){

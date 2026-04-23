@@ -1,4 +1,5 @@
 import { StyleSheet, Text, TextInput, View } from 'react-native';
+import {useTheme} from "@/context/ThemeContext";
 
 type Props = {
   label: string;
@@ -8,15 +9,16 @@ type Props = {
 };
 
 export default function FormField({ label, value, onChangeText, placeholder }: Props) {
+    const {theme} = useTheme();
   return (
     <View style={styles.wrapper}>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={[styles.label, {color: theme.text}]}>{label}</Text>
       <TextInput
         accessibilityLabel={label}
         placeholder={placeholder ?? label}
         value={value}
         onChangeText={onChangeText}
-        style={styles.input}
+        style={[styles.input, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.text }]}
       />
     </View>
   );

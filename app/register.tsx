@@ -1,4 +1,5 @@
 // taken from youtube tutorqls and modified https://youtu.be/9vydY9SDtAo?si=ogTkZMiXQxhR_ty-
+// used my fyp
 import {Alert, Pressable, ScrollView, Text, TextInput, View, StyleSheet} from "react-native";
 import { useState} from "react";
 import {useRouter} from "expo-router";

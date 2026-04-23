@@ -6,6 +6,7 @@ import { RunContext } from '../_layout';
 import {BarChart} from 'react-native-gifted-charts';
 import {getStartOfMonth, getStartOfWeek} from "@/lib/utils";
 import StatCard from '@/components/StatCard';
+import {useTheme} from "@/context/ThemeContext";
 
 type Period = 'weekly' | 'monthly';
 
@@ -15,6 +16,7 @@ const weekLabels = ['Wk 1', 'Wk 2', 'Wk 3', 'Wk 4', 'Wk 5'];
 
 export default function InsightsScreen() {
     const context = useContext(RunContext);
+    const {theme} = useTheme();
     const [period, setPeriod] = useState<Period>('weekly');
     if (!context) return null;
     const {runs} = context;
@@ -31,7 +33,7 @@ export default function InsightsScreen() {
     const totalDuration = filteredRuns.reduce((sum, r) => sum + r.durationMin, 0);
     const avgPace =
     totalDistance > 0 ? (totalDuration / totalDistance).toFixed(2) : '0.00';
-
+// weekly chart data
     const getWeeklyChartData = () => {
     const monday = new Date(weekStart);
     return dayLabels.map((label, i) => {
@@ -53,6 +55,7 @@ export default function InsightsScreen() {
       };
     });
   };
+    // monthly chart data
     const getMonthlyChartData = () => {
     const now = new Date();
     const year = now.getFullYear();
@@ -65,9 +68,10 @@ export default function InsightsScreen() {
         month,
         Math.min(1 + (i + 1) * 7, new Date(year, month + 1, 0).getDate() + 1)
       );
+      // get start and end of each week
       const wkStartStr = wkStart.toISOString().split('T')[0];
       const wkEndStr = wkEnd.toISOString().split('T')[0];
-
+// sum of run distance for the period
       const value = runs
         .filter((r) => r.date >= wkStartStr && r.date < wkEndStr)
         .reduce((sum, r) => sum + r.distanceKm, 0);
@@ -85,6 +89,7 @@ export default function InsightsScreen() {
   };
      const chartData =
     period === 'weekly' ? getWeeklyChartData() : getMonthlyChartData();
+     // group runs by category and distance
      const categoryMap: Record<string, { count: number; distance: number; color: string }> = {};
   filteredRuns.forEach((r) => {
     if (!categoryMap[r.categoryName]) {
@@ -93,12 +98,14 @@ export default function InsightsScreen() {
     categoryMap[r.categoryName].count += 1;
     categoryMap[r.categoryName].distance += r.distanceKm;
   });
+
+  // sort in descending order
   const categoryBreakdown = Object.entries(categoryMap).sort(
     (a, b) => b[1].distance - a[1].distance
   );
 
 return (
-    <View style={styles.safeArea}>
+    <View style={[styles.safeArea, {backgroundColor: theme.background}]}>
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
@@ -139,8 +146,8 @@ return (
             </View>
 
         {/* Bar chart */}
-        <View style={styles.chartCard}>
-          <Text style={styles.chartTitle}>
+        <View style={[styles.chartCard, {backgroundColor: theme.card}]}>
+          <Text style={[styles.chartTitle, {color: theme.text}]}>
             {period === 'weekly' ? 'Daily Distance (km)' : 'Weekly Distance (km)'}
           </Text>
           <BarChart
@@ -162,11 +169,11 @@ return (
         </View>
 
         {/* Category breakdown */}
-        <View style={styles.breakdownCard}>
-          <Text style={styles.chartTitle}>Category Breakdown</Text>
+        <View style={[styles.breakdownCard, {backgroundColor: theme.card}]}>
+          <Text style={[styles.chartTitle, {color: theme.text}]}>Category Breakdown</Text>
 
           {categoryBreakdown.length === 0 ? (
-            <Text style={styles.emptyText}>No runs this {period === 'weekly' ? 'week' : 'month'}</Text>
+            <Text style={[styles.emptyText, {color: theme.text}]}>No runs this {period === 'weekly' ? 'week' : 'month'}</Text>
           ) : (
             categoryBreakdown.map(([name, data]) => {
               const percent =
@@ -178,7 +185,7 @@ return (
                 <View key={name} style={styles.breakdownRow}>
                   <View style={[styles.breakdownDot, { backgroundColor: data.color }]} />
                   <View style={styles.breakdownInfo}>
-                    <Text style={styles.breakdownName}>{name}</Text>
+                    <Text style={[styles.breakdownName, {color: theme.text}]}>{name}</Text>
                     <Text style={styles.breakdownDetail}>
                       {data.count} {data.count === 1 ? 'run' : 'runs'} • {data.distance.toFixed(1)} km
                     </Text>
@@ -206,7 +213,6 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
 
-  // Toggle
   toggleRow: {
     flexDirection: 'row',
     gap: 8,

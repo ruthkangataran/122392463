@@ -1,3 +1,4 @@
+// used sample code
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useContext } from 'react';
 import PrimaryButton from '@/components/ui/primary-button';

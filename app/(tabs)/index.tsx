@@ -1,12 +1,6 @@
+// used my fyp home screen as reference
 import { useContext, useMemo } from 'react';
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-    Image
-} from 'react-native';
+import {Pressable, ScrollView, StyleSheet, Text, View,} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { RunContext } from '../_layout';
@@ -15,8 +9,7 @@ import RunCard from '@/components/RunCard';
 import { getStartOfWeek } from '@/lib/utils';
 import StretchSuggestion from "@/components/Exercises";
 import StreakCard from "@/components/SteakCard";
-
-type IoniconName = keyof typeof Ionicons.glyphMap;
+import { useTheme } from '@/context/ThemeContext';
 
 
 export default function HomeScreen() {
@@ -28,12 +21,14 @@ export default function HomeScreen() {
     () => runs.filter((r) => r.date >= weekStart),
     [runs, weekStart]
   );
+    // Calculate weekly summary statistics from filtered runs
   const totalDistance = thisWeekRuns.reduce((sum, r) => sum + r.distanceKm, 0);
   const totalRuns = thisWeekRuns.length;
   const totalDuration = thisWeekRuns.reduce((sum, r) => sum + r.durationMin, 0);
   const avgPace =
     totalDistance > 0 ? (totalDuration / totalDistance).toFixed(2) : '0.00';
 
+    // Sort runs by date descending and take the 3 most recent
   const recentRuns = useMemo(
     () =>
       [...runs]
@@ -41,12 +36,13 @@ export default function HomeScreen() {
         .slice(0, 3),
     [runs]
   );
+  const { theme } = useTheme();
     if (!context) return null;
 
 
   return (
     <ScrollView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: theme.background }]}
       contentContainerStyle={styles.content}
       showsVerticalScrollIndicator={false}
     >
@@ -88,7 +84,8 @@ export default function HomeScreen() {
 }
 
 function SectionTitle({ title }: { title: string }) {
-  return <Text style={styles.sectionTitle}>{title}</Text>;
+    const { theme } = useTheme();
+  return <Text style={[styles.sectionTitle, {color: theme.text}]}>{title}</Text>;
 }
 
 const styles = StyleSheet.create({

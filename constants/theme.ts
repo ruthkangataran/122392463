@@ -9,7 +9,7 @@ const periwinkle = '#ADBDFF';
 export const Colors = {
   light: {
     text: '#14213D',
-    background: '#F8FAFF',
+    background: '#EBEFFF',
     surface: '#FFFFFF',
     tint: brandBlue,
     icon: '#5B6475',
@@ -38,7 +38,7 @@ export const Colors = {
     tabIconDefault: '#94A3B8',
     tabIconSelected: periwinkle,
 
-    primary: periwinkle,
+    primary: brandBlue,
     secondary: brandBlue,
     accent: vividTangerine,
     highlight: royalGold,
